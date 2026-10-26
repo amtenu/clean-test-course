@@ -1,30 +1,32 @@
-import { render, screen, waitFor } from '@testing-library/react';
-import { API_URL } from '../../utils/constants';
-import axios from 'axios';
-import Home from '.';
+import { render, screen, waitFor } from "@testing-library/react";
+import { API_URL } from "../../utils/constants";
+import axios from "axios";
+import Home from ".";
 
-describe('Test Home', () => {
-  test('Test Render', async () => {
-    //Arrange: Setup the mock API
-    //Listen for any GET requests using the axios module
-    const mockGet = jest.spyOn(axios, 'get');
+describe("Test Home", () => {
+  afterEach(() => {
+    jest.restoreAllMocks();
+  });
+
+  test("Test Render", async () => {
+    const mockGet = jest.spyOn(axios, "get");
     //Intercept the GET requests and provide a mocked response
     mockGet.mockImplementation((url) => {
       switch (url) {
         case `${API_URL}/api/category/?format=json`:
           return Promise.resolve({
             data: {
-              status: 'success',
+              status: "success",
               data: [
                 {
                   id: 1,
-                  name: 'Handhelds',
+                  name: "Handhelds",
                   description: "So big, you don't need thumbs.",
                 },
                 {
                   id: 2,
-                  name: 'Appeteasers',
-                  description: 'Tease the hangry hippo, he get hangrier',
+                  name: "Appeteasers",
+                  description: "Tease the hangry hippo, he get hangrier",
                 },
               ],
             },
@@ -32,7 +34,7 @@ describe('Test Home', () => {
         default:
           return Promise.resolve({
             data: {
-              status: 'fail',
+              status: "fail",
             },
           });
       }
@@ -45,6 +47,13 @@ describe('Test Home', () => {
     //There should be 2 categories as defined in the mock response above
     expect(await screen.findAllByTestId(/category-item/i)).toHaveLength(2);
     //The word Appeateasers should be in there as defined in the mock response above.
-    expect(await screen.findByText('Appeteasers')).toBeInTheDocument();
+    expect(await screen.findByText("Appeteasers")).toBeInTheDocument();
   });
+});
+
+test("Test Render Integration", async () => {
+  render(<Home />);
+
+  expect(await screen.findAllByTestId(/category-item/i)).toHaveLength(2);
+  expect(await screen.findByText("Appeteasers")).toBeInTheDocument();
 });
