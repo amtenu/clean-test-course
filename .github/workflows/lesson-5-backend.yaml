@@ -24,8 +24,17 @@ jobs:
         run: |
           coverage run -m --source=./hangry_api pytest
           coverage report
+  sast:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7.0.1
+      - name: PyCharm Python Security Scanner
+        uses: tonybaloney/pycharm-security@1.25.1
+        with:
+          path: backend/
+
   deploy:
-    needs: [unit_test]
+    needs: [unit_test,sast]
     runs-on: ubuntu-latest
     defaults:
       run:
